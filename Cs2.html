@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROHUB • CS2 Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-[#020617] text-white font-sans" x-data="prohubApp()">
+
+    <div class="bg-black/80 py-2 px-[10%] flex justify-end gap-5 text-[10px] font-bold text-gray-500 border-b border-white/5">
+        <template x-for="l in ['PT', 'EN', 'ES', 'FR', 'DE', 'RU']">
+            <button @click="lang = l.toLowerCase()" :class="lang === l.toLowerCase() ? 'text-blue-500' : ''" x-text="l" class="hover:text-white transition"></button>
+        </template>
+    </div>
+
+    <header class="p-6 px-[10%] flex justify-between items-center bg-[#020617]/95 sticky top-0 border-b border-white/5 z-50 backdrop-blur-md">
+        <div class="text-2xl font-black italic tracking-tighter cursor-pointer" @click="page = 'home'">
+            PRO<span class="text-blue-600">HUB</span>
+        </div>
+        <nav class="flex gap-8 text-[11px] font-black uppercase text-gray-400">
+            <button @click="page = 'home'" :class="page === 'home' ? 'text-white border-b border-blue-600' : ''" x-text="t[lang].navHome"></button>
+            <button @click="page = 'players'" :class="page === 'players' ? 'text-white border-b border-blue-600' : ''" x-text="t[lang].navPlayers"></button>
+        </nav>
+    </header>
+
+    <main class="px-[10%] py-12">
+        <div x-show="page === 'home'" class="text-center py-20">
+            <h1 class="text-7xl font-black mb-6 italic tracking-tighter">PROHUB DATABASE</h1>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto" x-text="t[lang].heroDesc"></p>
+            <button @click="page = 'players'" class="mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-10 rounded-full transition uppercase text-xs tracking-widest">Ver Jogadores</button>
+        </div>
+
+        <div x-show="page === 'players'">
+            <div class="bg-slate-900/40 border border-white/5 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-black/60 text-[10px] text-gray-500 uppercase font-black tracking-widest border-b border-white/10">
+                        <tr>
+                            <th class="p-6">Player</th>
+                            <th class="p-6">Team</th>
+                            <th class="p-6">Mouse</th>
+                            <th class="p-6">Resolution</th>
+                            <th class="p-6 text-blue-500">Sens / DPI</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <template x-for="p in players">
+                            <tr class="border-b border-white/5 hover:bg-blue-600/10 transition">
+                                <td class="p-6 font-bold text-lg" x-text="p.name"></td>
+                                <td class="p-6"><span class="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-lg text-[10px] font-black" x-text="p.team"></span></td>
+                                <td class="p-6 text-gray-400" x-text="p.mouse"></td>
+                                <td class="p-6 text-gray-500 font-mono" x-text="p.res"></td>
+                                <td class="p-6 text-blue-400 font-mono font-bold" x-text="p.sens"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function prohubApp() {
+            return {
+                page: 'home', lang: 'pt',
+                t: {
+                    pt: { navHome: 'Início', navPlayers: 'Jogadores', heroDesc: 'A base de dados oficial com as configurações de vídeo e sensibilidade dos melhores jogadores do mundo.' },
+                    en: { navHome: 'Home', navPlayers: 'Players', heroDesc: 'The official database featuring video settings and sensitivity from the world\'s best players.' },
+                    es: { navHome: 'Inicio', navPlayers: 'Jugadores', heroDesc: 'La base de datos oficial con los ajustes de los mejores jugadores.' },
+                    fr: { navHome: 'Accueil', navPlayers: 'Joueurs', heroDesc: 'La base de données officielle des meilleurs joueurs.' },
+                    de: { navHome: 'Start', navPlayers: 'Spieler', heroDesc: 'Die offizielle Datenbank der besten Spieler.' },
+                    ru: { navHome: 'Главная', navPlayers: 'Игроки', heroDesc: 'Официальная база настроек лучших игроков.' }
+                },
+                players: [
+                    { name: "ZywOo", team: "VITALITY", mouse: "Pulsar X2H", res: "1280x960", sens: "2.00 / 400" },
+                    { name: "m0NESY", team: "G2", mouse: "Logitech G Pro X 2", res: "1280x960", sens: "2.00 / 400" },
+                    { name: "donk", team: "SPIRIT", mouse: "Logitech G Pro X", res: "1280x960", sens: "1.25 / 800" },
+                    { name: "NiKo", team: "G2", mouse: "Razer Viper V3 Pro", res: "1152x864", sens: "1.35 / 400" },
+                    { name: "FalleN", team: "FURIA", mouse: "Vaxee XE", res: "1024x768", sens: "2.20 / 400" }
+                ]
+            }
+        }
+    </script>
+</body>
+</html>
