@@ -1,87 +1,637 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROHUB • CS2 Database</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>ProHub | Global CS2 Tactical Intelligence</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Kanit:wght@700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================================================================
+           1. DESIGN SYSTEM & ROOT VARIABLES
+           ================================================================
+        */
+        :root {
+            /* Cores Primárias - Estética CS2 */
+            --primary: #ff9900;
+            --primary-rgb: 255, 153, 0;
+            --secondary: #12161f;
+            --accent: #00f2ff;
+            --bg-deep: #06070a;
+            --bg-surface: #0f121a;
+            --bg-card: #161b25;
+            --bg-nav: rgba(6, 7, 10, 0.92);
+            
+            /* Status */
+            --live-red: #ff0040;
+            --live-glow: rgba(255, 0, 64, 0.4);
+            --success: #00ff88;
+            --warning: #ffcc00;
+            
+            /* Tipografia e Escala */
+            --text-high: #ffffff;
+            --text-mid: #a0a7b1;
+            --text-low: #5e6673;
+            
+            /* UI Elements */
+            --border: rgba(255, 255, 255, 0.07);
+            --border-hover: rgba(255, 153, 0, 0.3);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ================================================================
+           2. CSS RESET & GLOBAL REFINEMENT
+           ================================================================
+        */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-high);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Scrollbar Premium */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { 
+            background: #252a35; 
+            border-radius: 5px; 
+            border: 2px solid var(--bg-deep);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Helpers */
+        .container { max-width: 1650px; margin: 0 auto; padding: 0 40px; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .uppercase { text-transform: uppercase; }
+
+        /* ================================================================
+           3. HEADER & NAVIGATION SYSTEM
+           ================================================================
+        */
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            height: 90px;
+            background: var(--bg-nav);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            z-index: 2000;
+            transition: var(--transition);
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .logo-text {
+            font-family: 'Kanit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            background: linear-gradient(to right, #fff 50%, var(--primary) 50%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links { list-style: none; display: flex; gap: 40px; }
+        .nav-links li a {
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: var(--text-mid);
+            letter-spacing: 1.5px;
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .nav-links li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 0; height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links li a:hover::after, .nav-links li a.active::after { width: 100%; }
+        .nav-links li a:hover, .nav-links li a.active { color: var(--primary); }
+
+        /* Multilingual Switcher */
+        .controls-hub { display: flex; align-items: center; gap: 20px; }
+        .lang-grid {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 4px;
+            border-radius: 14px;
+            display: flex;
+        }
+
+        .l-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-low);
+            padding: 8px 16px;
+            font-weight: 900;
+            font-size: 0.7rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .l-btn.active { background: var(--primary); color: #000; }
+        .l-btn:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.05); }
+
+        /* ================================================================
+           4. HERO & BREAKING NEWS
+           ================================================================
+        */
+        .main-wrapper {
+            margin-top: 130px;
+            padding-bottom: 100px;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 40px;
+        }
+
+        .hero-banner {
+            width: 100%;
+            height: 550px;
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-xl);
+            cursor: pointer;
+        }
+
+        .hero-img {
+            width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 1.5s ease;
+        }
+
+        .hero-banner:hover .hero-img { transform: scale(1.08); }
+
+        .hero-content {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%;
+            padding: 60px;
+            background: linear-gradient(to top, rgba(5,6,10,1) 0%, rgba(5,6,10,0.8) 40%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .status-badge {
+            width: fit-content;
+            background: var(--primary);
+            color: #000;
+            font-weight: 900;
+            padding: 5px 15px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .hero-content h1 {
+            font-family: 'Kanit', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1;
+            font-weight: 900;
+            max-width: 800px;
+        }
+
+        /* ================================================================
+           5. NEWS GRID SYSTEM
+           ================================================================
+        */
+        .section-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-left: 6px solid var(--primary);
+            padding-left: 20px;
+        }
+
+        .section-label h2 { font-family: 'Kanit', sans-serif; font-size: 2rem; font-weight: 900; }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .news-item {
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .news-item:hover {
+            transform: translateY(-12px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .news-media {
+            width: 100%;
+            height: 260px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .news-info { padding: 35px; }
+        .news-tag { color: var(--primary); font-weight: 800; font-size: 0.7rem; margin-bottom: 10px; display: block; letter-spacing: 1px; }
+        .news-title { font-family: 'Kanit', sans-serif; font-size: 1.5rem; line-height: 1.2; margin-bottom: 15px; }
+        .news-excerpt { color: var(--text-mid); font-size: 0.95rem; line-height: 1.6; }
+
+        /* ================================================================
+           6. SIDEBAR & WIDGETS
+           ================================================================
+        */
+        .sidebar-hub { display: flex; flex-direction: column; gap: 40px; }
+
+        .widget {
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            padding: 30px;
+        }
+
+        .widget-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .widget-head h3 { font-family: 'Kanit', sans-serif; font-size: 1.1rem; color: var(--primary); }
+
+        /* Live Stream Player */
+        .live-player-box {
+            background: #000;
+            border-radius: var(--radius-md);
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .live-tag {
+            position: absolute;
+            top: 20px; left: 20px;
+            background: var(--live-red);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 900;
+            padding: 5px 12px;
+            border-radius: 4px;
+            z-index: 10;
+            animation: pulse-red 2s infinite;
+        }
+
+        /* Matches Ticker */
+        .match-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .match-row:hover { border-color: var(--primary); background: rgba(255, 153, 0, 0.05); }
+        .team-box { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+        .team-box span { font-weight: 800; font-size: 0.8rem; }
+        .m-score { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary); }
+
+        /* ================================================================
+           7. ANIMATIONS & FOOTER
+           ================================================================
+        */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 var(--live-glow); opacity: 1; }
+            70% { box-shadow: 0 0 0 15px rgba(255, 0, 64, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 64, 0); opacity: 0.8; }
+        }
+
+        footer {
+            margin-top: 100px;
+            padding: 100px 5%;
+            background: #040508;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-logo { font-size: 3rem; color: var(--primary); font-family: 'Kanit', sans-serif; font-weight: 900; margin-bottom: 20px; }
+
+        @media (max-width: 1250px) {
+            .main-wrapper { grid-template-columns: 1fr; }
+            .sidebar-hub { order: -1; }
+            .hero-banner { height: 400px; }
+            .hero-content h1 { font-size: 2.2rem; }
+        }
+
+        @media (max-width: 800px) {
+            .news-grid { grid-template-columns: 1fr; }
+            header { padding: 0 20px; }
+            .nav-links { display: none; }
+        }
+    </style>
 </head>
-<body class="bg-[#020617] text-white font-sans" x-data="prohubApp()">
+<body>
 
-    <div class="bg-black/80 py-2 px-[10%] flex justify-end gap-5 text-[10px] font-bold text-gray-500 border-b border-white/5">
-        <template x-for="l in ['PT', 'EN', 'ES', 'FR', 'DE', 'RU']">
-            <button @click="lang = l.toLowerCase()" :class="lang === l.toLowerCase() ? 'text-blue-500' : ''" x-text="l" class="hover:text-white transition"></button>
-        </template>
-    </div>
-
-    <header class="p-6 px-[10%] flex justify-between items-center bg-[#020617]/95 sticky top-0 border-b border-white/5 z-50 backdrop-blur-md">
-        <div class="text-2xl font-black italic tracking-tighter cursor-pointer" @click="page = 'home'">
-            PRO<span class="text-blue-600">HUB</span>
+    <header id="main-header">
+        <div class="logo-area" onclick="location.reload()">
+            <div class="logo-text">PRO<span>HUB</span></div>
         </div>
-        <nav class="flex gap-8 text-[11px] font-black uppercase text-gray-400">
-            <button @click="page = 'home'" :class="page === 'home' ? 'text-white border-b border-blue-600' : ''" x-text="t[lang].navHome"></button>
-            <button @click="page = 'players'" :class="page === 'players' ? 'text-white border-b border-blue-600' : ''" x-text="t[lang].navPlayers"></button>
+
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#" class="active" data-tr="nav_home">Home</a></li>
+                <li><a href="#news-grid" data-tr="nav_news">Notícias</a></li>
+                <li><a href="#" data-tr="nav_matches">Partidas</a></li>
+                <li><a href="#" data-tr="nav_tournaments">Torneios</a></li>
+            </ul>
         </nav>
-    </header>
 
-    <main class="px-[10%] py-12">
-        <div x-show="page === 'home'" class="text-center py-20">
-            <h1 class="text-7xl font-black mb-6 italic tracking-tighter">PROHUB DATABASE</h1>
-            <p class="text-gray-400 text-lg max-w-2xl mx-auto" x-text="t[lang].heroDesc"></p>
-            <button @click="page = 'players'" class="mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-10 rounded-full transition uppercase text-xs tracking-widest">Ver Jogadores</button>
-        </div>
-
-        <div x-show="page === 'players'">
-            <div class="bg-slate-900/40 border border-white/5 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-black/60 text-[10px] text-gray-500 uppercase font-black tracking-widest border-b border-white/10">
-                        <tr>
-                            <th class="p-6">Player</th>
-                            <th class="p-6">Team</th>
-                            <th class="p-6">Mouse</th>
-                            <th class="p-6">Resolution</th>
-                            <th class="p-6 text-blue-500">Sens / DPI</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-sm">
-                        <template x-for="p in players">
-                            <tr class="border-b border-white/5 hover:bg-blue-600/10 transition">
-                                <td class="p-6 font-bold text-lg" x-text="p.name"></td>
-                                <td class="p-6"><span class="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-lg text-[10px] font-black" x-text="p.team"></span></td>
-                                <td class="p-6 text-gray-400" x-text="p.mouse"></td>
-                                <td class="p-6 text-gray-500 font-mono" x-text="p.res"></td>
-                                <td class="p-6 text-blue-400 font-mono font-bold" x-text="p.sens"></td>
-                            </tr>
-                        </template>
-                    </tbody>
-                </table>
+        <div class="controls-hub">
+            <div class="lang-grid">
+                <button class="l-btn active" data-lang="pt">PT</button>
+                <button class="l-btn" data-lang="en">EN</button>
+                <button class="l-btn" data-lang="es">ES</button>
+                <button class="l-btn" data-lang="fr">FR</button>
+                <button class="l-btn" data-lang="ru">RU</button>
             </div>
         </div>
-    </main>
+    </header>
+
+    <div class="container main-wrapper">
+        
+        <main>
+            <section class="hero-banner" id="hero-injection">
+                </section>
+
+            <div class="section-label">
+                <h2 data-tr="sec_latest">Últimas Notícias</h2>
+                <div style="font-size: 0.8rem; color: var(--primary); cursor: pointer; font-weight: 800;">AUTO-REFRESH: ON</div>
+            </div>
+
+            <section class="news-grid" id="news-injection">
+                </section>
+        </main>
+
+        <aside class="sidebar-hub">
+            
+            <div class="widget">
+                <div class="widget-head">
+                    <h3 data-tr="sec_live">Transmissão em Direto</h3>
+                </div>
+                <div class="live-player-box">
+                    <div class="live-tag">LIVE NOW</div>
+                    <iframe 
+                        src="https://player.twitch.tv/?channel=gaules&parent=localhost&muted=true" 
+                        height="100%" width="100%" allowfullscreen="true" style="border:none;">
+                    </iframe>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-mid);" data-tr="live_desc">
+                    Acompanhando os principais eventos mundiais em tempo real.
+                </p>
+            </div>
+
+            <div class="widget">
+                <div class="widget-head">
+                    <h3 data-tr="sec_matches">Próximos Confrontos</h3>
+                </div>
+                <div class="match-row">
+                    <div class="team-box"><span>NAVI</span></div>
+                    <div class="m-score">22:00</div>
+                    <div class="team-box"><span>FAZE</span></div>
+                </div>
+                <div class="match-row">
+                    <div class="team-box"><span>G2</span></div>
+                    <div class="m-score">01:30</div>
+                    <div class="team-box"><span>VITALITY</span></div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-head">
+                    <h3 data-tr="sec_feed">Global Feed</h3>
+                </div>
+                <div style="height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border);">
+                    <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter transparent" href="https://twitter.com/HLTVorg?ref_src=twsrc%5Etfw"></a> 
+                    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+
+    <footer>
+        <div class="footer-logo">ProHub</div>
+        <p style="color: var(--text-low); max-width: 600px; margin: 0 auto;">
+            Global Counter-Strike Intelligence Hub. Delivering real-time news, live data, and tactical analysis for the elite community.
+        </p>
+    </footer>
 
     <script>
-        function prohubApp() {
-            return {
-                page: 'home', lang: 'pt',
-                t: {
-                    pt: { navHome: 'Início', navPlayers: 'Jogadores', heroDesc: 'A base de dados oficial com as configurações de vídeo e sensibilidade dos melhores jogadores do mundo.' },
-                    en: { navHome: 'Home', navPlayers: 'Players', heroDesc: 'The official database featuring video settings and sensitivity from the world\'s best players.' },
-                    es: { navHome: 'Inicio', navPlayers: 'Jugadores', heroDesc: 'La base de datos oficial con los ajustes de los mejores jugadores.' },
-                    fr: { navHome: 'Accueil', navPlayers: 'Joueurs', heroDesc: 'La base de données officielle des meilleurs joueurs.' },
-                    de: { navHome: 'Start', navPlayers: 'Spieler', heroDesc: 'Die offizielle Datenbank der besten Spieler.' },
-                    ru: { navHome: 'Главная', navPlayers: 'Игроки', heroDesc: 'Официальная база настроек лучших игроков.' }
+        /**
+         * PROHUB CORE DATABASE
+         * Contém todas as traduções, incluindo Russo e as imagens live-themed.
+         */
+        const PROHUB_DB = {
+            pt: {
+                nav_home: "Início", nav_news: "Notícias", nav_matches: "Partidas", nav_tournaments: "Torneios",
+                sec_latest: "Últimas Notícias", sec_live: "Transmissão ao Vivo", sec_matches: "Próximas Partidas", sec_feed: "Feed Real",
+                live_desc: "Acompanhando os principais eventos mundiais em tempo real.",
+                hero: {
+                    title: "Novo Patch do CS2: Mudanças drásticas na economia e sub-tick.",
+                    tag: "PATCH NOTES",
+                    img: "https://images.alphacoders.com/133/1331821.png"
                 },
-                players: [
-                    { name: "ZywOo", team: "VITALITY", mouse: "Pulsar X2H", res: "1280x960", sens: "2.00 / 400" },
-                    { name: "m0NESY", team: "G2", mouse: "Logitech G Pro X 2", res: "1280x960", sens: "2.00 / 400" },
-                    { name: "donk", team: "SPIRIT", mouse: "Logitech G Pro X", res: "1280x960", sens: "1.25 / 800" },
-                    { name: "NiKo", team: "G2", mouse: "Razer Viper V3 Pro", res: "1152x864", sens: "1.35 / 400" },
-                    { name: "FalleN", team: "FURIA", mouse: "Vaxee XE", res: "1024x768", sens: "2.20 / 400" }
+                news: [
+                    { t: "Major Estocolmo 2026: Grupos oficiais revelados hoje.", tag: "ESPORTS", img: "https://images.alphacoders.com/439/439566.jpg", d: "A Valve liberou a tabela completa do torneio que promete a maior premiação da história." },
+                    { t: "Anti-cheat evolutivo: IA agora detecta comportamentos pré-venda.", tag: "TECNOLOGIA", img: "https://images.alphacoders.com/132/1329243.jpeg", d: "A nova camada de proteção promete banimentos em milissegundos." },
+                    { t: "Inferno recebe retrabalho visual para melhorar visibilidade.", tag: "MAPAS", img: "https://images.alphacoders.com/132/1328468.jpeg", d: "Texturas foram simplificadas em áreas críticas como o 'cemitério' e 'apartamentos'." },
+                    { t: "Entrevista: O futuro do cenário Tier 2 europeu.", tag: "EXCLUSIVO", img: "https://images8.alphacoders.com/133/1332029.png", d: "Conversamos com os gestores das maiores ligas regionais sobre sustentabilidade." }
+                ]
+            },
+            en: {
+                nav_home: "Home", nav_news: "News", nav_matches: "Matches", nav_tournaments: "Tournaments",
+                sec_latest: "Latest News", sec_live: "Live Streaming", sec_matches: "Upcoming Matches", sec_feed: "Global Feed",
+                live_desc: "Monitoring major world events in real-time.",
+                hero: {
+                    title: "New CS2 Patch: Drastic changes in economy and sub-tick systems.",
+                    tag: "PATCH NOTES",
+                    img: "https://images.alphacoders.com/133/1331821.png"
+                },
+                news: [
+                    { t: "Stockholm Major 2026: Official groups revealed today.", tag: "ESPORTS", img: "https://images.alphacoders.com/439/439566.jpg", d: "Valve released the full bracket for the tournament promising the largest prize pool in history." },
+                    { t: "Evolutionary Anti-cheat: AI now detects pre-sale behaviors.", tag: "TECH", img: "https://images.alphacoders.com/132/1329243.jpeg", d: "The new protection layer promises bans within milliseconds." },
+                    { t: "Inferno receives visual rework to improve visibility.", tag: "MAPS", img: "https://images.alphacoders.com/132/1328468.jpeg", d: "Textures were simplified in critical areas like 'graveyard' and 'apartments'." },
+                    { t: "Interview: The future of the European Tier 2 scene.", tag: "EXCLUSIVE", img: "https://images8.alphacoders.com/133/1332029.png", d: "We talked with managers of the major regional leagues about sustainability." }
+                ]
+            },
+            es: {
+                nav_home: "Inicio", nav_news: "Noticias", nav_matches: "Partidos", nav_tournaments: "Torneos",
+                sec_latest: "Últimas Noticias", sec_live: "Transmisión en Vivo", sec_matches: "Próximos Partidos", sec_feed: "Feed Global",
+                live_desc: "Monitoreo de los principales eventos mundiales en tiempo real.",
+                hero: {
+                    title: "Nuevo parche de CS2: Cambios drásticos en la economía y el sub-tick.",
+                    tag: "NOTAS DEL PARCHE",
+                    img: "https://images.alphacoders.com/133/1331821.png"
+                },
+                news: [
+                    { t: "Major Estocolmo 2026: Grupos oficiales revelados hoy.", tag: "ESPORTS", img: "https://images.alphacoders.com/439/439566.jpg", d: "Valve lanzó el cuadro completo para el torneo que promete el mayor premio de la historia." },
+                    { t: "Anti-cheat evolutivo: IA detecta comportamientos sospechosos.", tag: "TECNOLOGÍA", img: "https://images.alphacoders.com/132/1329243.jpeg", d: "La nueva capa de protección promete bloqueos en milisegundos." },
+                    { t: "Inferno recibe un rediseño visual para mejorar la visibilidad.", tag: "MAPAS", img: "https://images.alphacoders.com/132/1328468.jpeg", d: "Se simplificaron las texturas en áreas críticas como el cementerio." },
+                    { t: "Entrevista: El futuro de la escena Tier 2 europea.", tag: "EXCLUSIVO", img: "https://images8.alphacoders.com/133/1332029.png", d: "Hablamos con los directores sobre la sostenibilidad de las ligas." }
+                ]
+            },
+            fr: {
+                nav_home: "Accueil", nav_news: "Nouvelles", nav_matches: "Matchs", nav_tournaments: "Tournois",
+                sec_latest: "Dernières Nouvelles", sec_live: "Stream en Direct", sec_matches: "Matchs à Venir", sec_feed: "Flux Global",
+                live_desc: "Suivi des grands événements mondiaux en temps réel.",
+                hero: {
+                    title: "Nouveau Patch CS2 : Changements drastiques de l'économie et du sub-tick.",
+                    tag: "PATCH NOTES",
+                    img: "https://images.alphacoders.com/133/1331821.png"
+                },
+                news: [
+                    { t: "Major Stockholm 2026 : Les groupes officiels révélés aujourd'hui.", tag: "ESPORTS", img: "https://images.alphacoders.com/439/439566.jpg", d: "Valve a publié le bracket complet du tournoi avec le plus grand cashprize de l'histoire." },
+                    { t: "Anti-cheat évolutif : l'IA détecte les comportements suspects.", tag: "TECH", img: "https://images.alphacoders.com/132/1329243.jpeg", d: "La nouvelle couche de protection promet des bans en quelques millisecondes." },
+                    { t: "Inferno reçoit une refonte visuelle pour une meilleure visibilité.", tag: "CARTES", img: "https://images.alphacoders.com/132/1328468.jpeg", d: "Les textures ont été simplifiées dans les zones critiques comme le cimetière." },
+                    { t: "Interview : L'avenir de la scène européenne Tier 2.", tag: "EXCLUSIF", img: "https://images8.alphacoders.com/133/1332029.png", d: "Entretien avec les gestionnaires des ligues régionales sur la durabilité." }
+                ]
+            },
+            ru: {
+                nav_home: "Главная", nav_news: "Новости", nav_matches: "Матчи", nav_tournaments: "Турниры",
+                sec_latest: "Последние Новости", sec_live: "Прямой Эфир", sec_matches: "Предстоящие Матчи", sec_feed: "Глобальная Лента",
+                live_desc: "Мониторинг крупнейших мировых событий в режиме реального времени.",
+                hero: {
+                    title: "Новый патч CS2: Кардинальные изменения в экономике и саб-тике.",
+                    tag: "ОПИСАНИЕ ПАТЧА",
+                    img: "https://images.alphacoders.com/133/1331821.png"
+                },
+                news: [
+                    { t: "Major Стокгольм 2026: Сегодня раскрыты официальные группы.", tag: "КИБЕРСПОРТ", img: "https://images.alphacoders.com/439/439566.jpg", d: "Valve опубликовала сетку турнира с крупнейшим призовым фондом в истории." },
+                    { t: "Эволюционный античит: ИИ теперь выявляет подозрительное поведение.", tag: "ТЕХНОЛОГИИ", img: "https://images.alphacoders.com/132/1329243.jpeg", d: "Новый уровень защиты обещает баны за миллисекунды." },
+                    { t: "Inferno получил визуальное обновление для лучшей видимости.", tag: "КАРТЫ", img: "https://images.alphacoders.com/132/1328468.jpeg", d: "Текстуры были упрощены в критических зонах, таких как 'кладбище'." },
+                    { t: "Интервью: Будущее европейской Tier-2 сцены.", tag: "ЭКСКЛЮЗИВ", img: "https://images8.alphacoders.com/133/1332029.png", d: "Мы поговорили с менеджерами лиг о стабильности региональной сцены." }
                 ]
             }
+        };
+
+        /**
+         * RENDER ENGINE CLASS
+         * Controla a interface e a lógica de tradução.
+         */
+        class ProHubEngine {
+            constructor() {
+                this.currentLang = 'pt';
+                this.initListeners();
+                this.refresh(this.currentLang);
+            }
+
+            initListeners() {
+                // Seleção de Idioma
+                document.querySelectorAll('.l-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentLang = e.target.getAttribute('data-lang');
+                        this.refresh(this.currentLang);
+                    });
+                });
+
+                // Efeito de Scroll no Header
+                window.addEventListener('scroll', () => {
+                    const header = document.getElementById('main-header');
+                    if (window.scrollY > 50) {
+                        header.style.height = '75px';
+                        header.style.background = 'rgba(5, 6, 8, 0.98)';
+                    } else {
+                        header.style.height = '90px';
+                        header.style.background = 'rgba(5, 6, 8, 0.92)';
+                    }
+                });
+            }
+
+            refresh(lang) {
+                const db = PROHUB_DB[lang];
+
+                // 1. Traduzir Elementos UI
+                document.querySelectorAll('[data-tr]').forEach(el => {
+                    const key = el.getAttribute('data-tr');
+                    if (db[key]) el.innerText = db[key];
+                });
+
+                // 2. Renderizar Hero Spotlight
+                const heroBox = document.getElementById('hero-injection');
+                heroBox.innerHTML = `
+                    <div class="hero-img" style="background-image: url('${db.hero.img}')"></div>
+                    <div class="hero-content">
+                        <span class="status-badge">${db.hero.tag}</span>
+                        <h1>${db.hero.title}</h1>
+                    </div>
+                `;
+
+                // 3. Renderizar Grid de Notícias Principal
+                const newsBox = document.getElementById('news-injection');
+                newsBox.innerHTML = ''; // Limpar
+                db.news.forEach((art, index) => {
+                    newsBox.innerHTML += `
+                        <article class="news-item" style="animation: fadeInUp 0.5s ease forwards ${index * 0.1}s; opacity: 0;">
+                            <div class="news-media" style="background-image: url('${art.img}')">
+                                <span class="status-badge" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.8); color:var(--primary);">${art.tag}</span>
+                            </div>
+                            <div class="news-info">
+                                <span class="news-tag">${lang === 'ru' ? 'СЕЙЧАС' : 'RECENT'}</span>
+                                <h3 class="news-title">${art.t}</h3>
+                                <p class="news-excerpt">${art.d}</p>
+                            </div>
+                        </article>
+                    `;
+                });
+            }
         }
+
+        // Estilo extra de animação via JS
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeInUp {
+                from { transform: translateY(30px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inicializar Motor
+        const engine = new ProHubEngine();
+
     </script>
 </body>
 </html>
